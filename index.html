@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT PRICING</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #0033cc;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .container {
+            display: flex;
+        }
+        nav {
+            width: 200px;
+            background-color: #0044ff;
+            padding-top: 20px;
+            min-height: 100vh;
+        }
+        nav a {
+            display: block;
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: #0033cc;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        h2 {
+            color: #0033cc;
+        }
+        .input-field {
+            margin-bottom: 10px;
+        }
+        .input-field label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-field input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .button-calculate {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .button-calculate:hover {
+            background-color: #218838;
+        }
+        .output-field {
+            margin-top: 20px;
+        }
+        .output-field p {
+            font-size: 1.2rem;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>GT PRICING</h1>
+</header>
+
+<div class="container">
+    <nav>
+        <a href="#indicadores">Menu Indicadores</a>
+        <a href="#noticias">Menu Notícias</a>
+        <a href="#negociacao">Menu Negociação de Taxa</a>
+        <a href="#configuracao">Menu Configuração</a>
+        <a href="#conceitos">Menu Conceitos</a>
+    </nav>
+
+    <main>
+        <section id="negociacao">
+            <h2>Negociação de Taxa</h2>
+            <div class="input-field">
+                <label for="vo">Valor da Operação (VO):</label>
+                <input type="number" id="vo" placeholder="Insira o valor da operação">
+            </div>
+            <div class="input-field">
+                <label for="n">Prazo da Operação (N - meses):</label>
+                <input type="number" id="n" placeholder="Insira o prazo em meses">
+            </div>
+            <div class="input-field">
+                <label for="i">Taxa de Juros Mensal (i - %):</label>
+                <input type="number" id="i" placeholder="Insira a taxa de juros mensal">
+            </div>
+            <div class="input-field">
+                <label for="t">Taxa de Captação Mensal (t - %):</label>
+                <input type="number" id="t" placeholder="Insira a taxa de captação">
+            </div>
+            <div class="input-field">
+                <label for="inad">Inadimplência (INAD - %):</label>
+                <input type="number" id="inad" placeholder="Insira o valor da inadimplência">
+            </div>
+            <div class="input-field">
+                <label for="prov">Provisão (PROV - %):</label>
+                <input type="number" id="prov" placeholder="Insira a provisão">
+            </div>
+            <div class="input-field">
+                <label for="tcl">Tipo de Cliente (TCL):</label>
+                <input type="text" id="tcl" placeholder="Ex: PF ou PJ">
+            </div>
+            <div class="input-field">
+                <label for="top">Tipo de Operação (TOP):</label>
+                <input type="text" id="top" placeholder="Tipo de operação de crédito">
+            </div>
+            <div class="input-field">
+                <label for="gar">Garantia (GAR):</label>
+                <input type="text" id="gar" placeholder="Tipo de garantia">
+            </div>
+            <div class="input-field">
+                <label for="sam">Sistema de Amortização (SAM):</label>
+                <input type="text" id="sam" placeholder="Ex: Price, SAC, Hamburguês">
+            </div>
+            <button class="button-calculate" onclick="calcular()">Calcular</button>
+
+            <div class="output-field">
+                <p id="mc">Margem de Contribuição (MC): </p>
+                <p id="mc_percent">Margem de Contribuição Percentual (MC%): </p>
+                <p id="raroc">RAROC Anualizado: </p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    function calcular() {
+        let vo = parseFloat(document.getElementById('vo').value);
+        let n = parseInt(document.getElementById('n').value);
+        let i = parseFloat(document.getElementById('i').value) / 100;
+        let t = parseFloat(document.getElementById('t').value) / 100;
+        let inad = parseFloat(document.getElementById('inad').value) / 100;
+        let prov = parseFloat(document.getElementById('prov').value) / 100;
+        
+        // Cálculos
+        let rji = vo * i * n;
+        let cct = vo * t * n;
+        let tac = Math.min(50000, Math.max(200, 0.035 * vo));
+        let mc = rji + 0.95 * tac - cct - inad * vo - prov * vo - 0.0465 * (rji - cct);
+        let mcPercent = (mc / (rji + 0.95 * tac)) * 100;
+        let raroc = (1 + ((1 + (mc - 0.10 * rji) - (0.45 * (mc - 0.10 * rji))) / (vo * 0.1345 * 0.75))) ** (12 / n) - 1;
+
+        // Exibição dos resultados
+        document.getElementById('mc').textContent = `Margem de Contribuição (MC): R$ ${mc.toFixed(2)}`;
+        document.getElementById('mc_percent').textContent = `Margem de Contribuição Percentual (MC%): ${mcPercent.toFixed(2)}%`;
+        document.getElementById('raroc').textContent = `RAROC Anualizado: ${(raroc * 100).toFixed(2)}%`;
+    }
+</script>
+
+</body>
+</html>
